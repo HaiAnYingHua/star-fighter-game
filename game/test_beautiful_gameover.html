@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美化游戏结束界面预览</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* 美化游戏结束界面 */
+        #gameOverScreen {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(26, 26, 46, 0.95) 50%, rgba(22, 33, 62, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            height: 100vh;
+        }
+        
+        .game-over-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+            animation: gameOverSlideIn 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-over-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes gameOverSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .game-over-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-over-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .game-over-title {
+            font-size: 2.5em;
+            color: #ff6b6b;
+            text-shadow: 0 0 20px #ff6b6b;
+            margin: 0 0 10px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+        }
+        
+        .game-over-subtitle {
+            font-size: 1.2em;
+            color: #ffffff;
+            opacity: 0.8;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .final-score-display {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 255, 255, 0.1) 100%);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 20px;
+            position: relative;
+        }
+        
+        .score-label {
+            font-size: 1.1em;
+            color: #ffffff;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .score-value {
+            font-size: 3em;
+            color: #00ffff;
+            text-shadow: 0 0 25px #00ffff;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            animation: scoreGlow 2s infinite alternate;
+        }
+        
+        @keyframes scoreGlow {
+            from { text-shadow: 0 0 25px #00ffff; }
+            to { text-shadow: 0 0 35px #00ffff, 0 0 45px #00ffff; }
+        }
+        
+        .game-over-stats {
+            margin-bottom: 30px;
+        }
+        
+        .stat-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+        }
+        
+        .stat-icon {
+            font-size: 2em;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #ffffff;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .stat-value {
+            font-size: 1.4em;
+            color: #00ffff;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .achievements-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .achievement {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 5px;
+            color: #ffc107;
+            font-size: 0.9em;
+            font-family: 'Orbitron', sans-serif;
+            animation: achievementGlow 2s infinite alternate;
+        }
+        
+        @keyframes achievementGlow {
+            from { box-shadow: 0 0 10px rgba(255, 193, 7, 0.3); }
+            to { box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); }
+        }
+        
+        .game-over-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border: 2px solid;
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .action-btn:hover::before {
+            left: 100%;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+        
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.3) 0%, rgba(76, 175, 80, 0.2) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.4);
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(33, 150, 243, 0.1) 100%);
+            border-color: #2196f3;
+            color: #2196f3;
+        }
+        
+        .action-btn.secondary:hover {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(33, 150, 243, 0.2) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(33, 150, 243, 0.4);
+        }
+        
+        .action-btn.tertiary {
+            background: linear-gradient(135deg, rgba(158, 158, 158, 0.2) 0%, rgba(158, 158, 158, 0.1) 100%);
+            border-color: #9e9e9e;
+            color: #9e9e9e;
+        }
+        
+        .action-btn.tertiary:hover {
+            background: linear-gradient(135deg, rgba(158, 158, 158, 0.3) 0%, rgba(158, 158, 158, 0.2) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(158, 158, 158, 0.4);
+        }
+        
+        .btn-icon {
+            font-size: 1.2em;
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+        
+        .btn-text {
+            font-weight: 600;
+        }
+        
+        /* 切换按钮 */
+        .demo-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .demo-btn {
+            background: rgba(0, 255, 255, 0.2);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            color: #00ffff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-controls">
+        <button class="demo-btn" onclick="showDeathScreen()">战机坠毁</button>
+        <button class="demo-btn" onclick="showVictoryScreen()">主动结束</button>
+    </div>
+
+    <div id="gameOverScreen">
+        <div class="game-over-container">
+            <div class="game-over-header">
+                <div class="game-over-icon">💥</div>
+                <h2 class="game-over-title">战机坠毁</h2>
+                <div class="game-over-subtitle" id="endReason">任务失败</div>
+            </div>
+            
+            <div class="game-over-content">
+                <div class="final-score-display">
+                    <div class="score-label">最终分数</div>
+                    <div class="score-value" id="finalScoreValue">15,680</div>
+                </div>
+                
+                <div class="game-over-stats">
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <div class="stat-icon">🏆</div>
+                            <div class="stat-content">
+                                <div class="stat-label">最高分数</div>
+                                <div class="stat-value" id="highScoreValue">23,450</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">💀</div>
+                            <div class="stat-content">
+                                <div class="stat-label">总击杀</div>
+                                <div class="stat-value" id="totalKillsValue">89</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-content">
+                                <div class="stat-label">存活时间</div>
+                                <div class="stat-value" id="survivalTimeValue">08:42</div>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-content">
+                                <div class="stat-label">命中率</div>
+                                <div class="stat-value" id="accuracyValue">85%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="achievements-section" id="achievements">
+                    <div class="achievement">🏆 首次击杀</div>
+                    <div class="achievement">🔥 连击达人</div>
+                    <div class="achievement">⚡ 神射手</div>
+                </div>
+                
+                <div class="game-over-actions">
+                    <button class="action-btn primary" onclick="alert('重新开始游戏')">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">再次出击</span>
+                    </button>
+                    <button class="action-btn secondary" onclick="alert('分享战绩')">
+                        <span class="btn-icon">📤</span>
+                        <span class="btn-text">分享战绩</span>
+                    </button>
+                    <button class="action-btn tertiary" onclick="alert('返回主菜单')">
+                        <span class="btn-icon">🏠</span>
+                        <span class="btn-text">返回主菜单</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDeathScreen() {
+            const icon = document.querySelector('.game-over-icon');
+            const title = document.querySelector('.game-over-title');
+            const subtitle = document.getElementById('endReason');
+            const container = document.querySelector('.game-over-container');
+            
+            icon.textContent = '💥';
+            title.textContent = '战机坠毁';
+            title.style.color = '#ff6b6b';
+            subtitle.textContent = '任务失败';
+            container.style.borderColor = 'rgba(255, 107, 107, 0.5)';
+            container.style.boxShadow = '0 20px 60px rgba(255, 107, 107, 0.3)';
+            
+            // 重新触发动画
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'gameOverSlideIn 0.8s ease-out';
+            }, 10);
+        }
+        
+        function showVictoryScreen() {
+            const icon = document.querySelector('.game-over-icon');
+            const title = document.querySelector('.game-over-title');
+            const subtitle = document.getElementById('endReason');
+            const container = document.querySelector('.game-over-container');
+            
+            icon.textContent = '✨';
+            title.textContent = '游戏结束';
+            title.style.color = '#ffd700';
+            subtitle.textContent = '✨ 主动结束游戏';
+            container.style.borderColor = 'rgba(255, 215, 0, 0.5)';
+            container.style.boxShadow = '0 20px 60px rgba(255, 215, 0, 0.3)';
+            
+            // 重新触发动画
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'gameOverSlideIn 0.8s ease-out';
+            }, 10);
+        }
+        
+        // 添加一些交互效果
+        document.querySelectorAll('.stat-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        // 数字动画效果
+        function animateNumber(element, target) {
+            const start = 0;
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (target - start) * progress);
+                
+                element.textContent = current.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+        
+        // 页面加载时启动数字动画
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                animateNumber(document.getElementById('finalScoreValue'), 15680);
+                animateNumber(document.getElementById('highScoreValue'), 23450);
+                animateNumber(document.getElementById('totalKillsValue'), 89);
+            }, 500);
+        });
+    </script>
+</body>
+</html> 

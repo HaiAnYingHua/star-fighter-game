@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试 - 星际战机</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        #debug-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #gameCanvas {
+            border: 2px solid #fff;
+            background: #001122;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug-info">
+        <h2>🔧 游戏调试信息</h2>
+        <p>状态: <span id="game-status">未初始化</span></p>
+        <p>错误: <span id="error-info">无</span></p>
+        <button onclick="testGame()">测试游戏初始化</button>
+        <button onclick="testStartGame()">测试启动游戏</button>
+        <button onclick="checkConsole()">检查控制台</button>
+    </div>
+    
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    
+    <script>
+        let game = null;
+        
+        function updateStatus(status) {
+            document.getElementById('game-status').textContent = status;
+        }
+        
+        function updateError(error) {
+            document.getElementById('error-info').textContent = error;
+        }
+        
+        function testGame() {
+            try {
+                updateStatus('正在初始化...');
+                
+                // 检查必要的元素
+                const canvas = document.getElementById('gameCanvas');
+                if (!canvas) {
+                    throw new Error('画布元素未找到');
+                }
+                
+                updateStatus('画布检查通过');
+                
+                // 尝试加载脚本
+                loadScripts();
+                
+            } catch (error) {
+                updateError(error.message);
+                updateStatus('初始化失败');
+                console.error('游戏初始化错误:', error);
+            }
+        }
+        
+        function loadScripts() {
+            const scripts = [
+                'utils.js',
+                'particle.js', 
+                'bullet.js',
+                'powerup.js',
+                'player.js',
+                'enemy.js',
+                'audio.js',
+                'game.js'
+            ];
+            
+            let loadedCount = 0;
+            
+            scripts.forEach((scriptName, index) => {
+                const script = document.createElement('script');
+                script.src = scriptName;
+                script.onload = () => {
+                    loadedCount++;
+                    updateStatus(`加载脚本 ${loadedCount}/${scripts.length}: ${scriptName}`);
+                    
+                    if (loadedCount === scripts.length) {
+                        setTimeout(() => {
+                            initializeGame();
+                        }, 100);
+                    }
+                };
+                script.onerror = () => {
+                    updateError(`无法加载脚本: ${scriptName}`);
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        function initializeGame() {
+            try {
+                updateStatus('创建游戏实例...');
+                
+                // 检查必要的类是否存在
+                if (typeof Game === 'undefined') {
+                    throw new Error('Game 类未定义');
+                }
+                
+                game = new Game();
+                window.game = game;
+                
+                updateStatus('游戏初始化成功！');
+                updateError('无');
+                
+            } catch (error) {
+                updateError(error.message);
+                updateStatus('游戏初始化失败');
+                console.error('游戏创建错误:', error);
+            }
+        }
+        
+        function testStartGame() {
+            if (!game) {
+                updateError('游戏未初始化');
+                return;
+            }
+            
+            try {
+                updateStatus('尝试启动游戏...');
+                game.startGame();
+                updateStatus('游戏启动成功！');
+            } catch (error) {
+                updateError(error.message);
+                updateStatus('游戏启动失败');
+                console.error('游戏启动错误:', error);
+            }
+        }
+        
+        function checkConsole() {
+            updateStatus('请检查浏览器控制台 (F12)');
+            console.log('=== 游戏调试信息 ===');
+            console.log('游戏对象:', game);
+            console.log('画布元素:', document.getElementById('gameCanvas'));
+            console.log('当前状态:', game ? game.state : '游戏未初始化');
+        }
+        
+        // 捕获所有错误
+        window.addEventListener('error', (event) => {
+            updateError(`JavaScript错误: ${event.message}`);
+            console.error('全局错误:', event);
+        });
+        
+        // 页面加载完成后自动测试
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('页面加载完成，准备测试');
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>星际战机 - 科幻飞机大战</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <!-- 粒子背景 -->
+    <div class="particle-bg" id="particleBg"></div>
+    
+    <div id="gameContainer">
+        <!-- 游戏画布 -->
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- 游戏UI -->
+        <div id="gameUI">
+            <div class="ui-element" id="score">分数: 0</div>
+            <div class="ui-element" id="lives">生命: 3</div>
+            <div class="ui-element" id="level">等级: 1</div>
+            <div class="ui-element" id="combo">连击: 0</div>
+        </div>
+        
+        <!-- 迷你地图 -->
+        <canvas id="miniMap"></canvas>
+        
+        <!-- 技能栏 -->
+        <div id="skillBar" class="hidden">
+            <div class="skill-button" id="skill1" title="超级射击">
+                🚀
+                <div class="cooldown-overlay"></div>
+            </div>
+            <div class="skill-button" id="skill2" title="时间减缓">
+                ⏰
+                <div class="cooldown-overlay"></div>
+            </div>
+            <div class="skill-button" id="skill3" title="能量护盾">
+                🛡️
+                <div class="cooldown-overlay"></div>
+            </div>
+            <div class="skill-button" id="skill4" title="清屏炸弹">
+                💥
+                <div class="cooldown-overlay"></div>
+            </div>
+        </div>
+        
+        <!-- 连击显示 -->
+        <div id="comboDisplay">COMBO x0</div>
+        
+        <!-- 开始界面 -->
+        <div id="startScreen" class="screen">
+            <div class="main-menu-container">
+                <!-- 游戏标题区域 -->
+                <div class="game-title-section">
+                    <div class="title-decoration">
+                        <div class="star-field">
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                        </div>
+                    </div>
+                    <h1 class="game-title">
+                        <span class="title-icon">🚀</span>
+                        <span class="title-text">星际战机</span>
+                        <span class="title-subtitle">SPACE FIGHTER</span>
+                    </h1>
+                    <div class="version-info">v1.0.0</div>
+                </div>
+                
+                <!-- 游戏特色介绍 -->
+                <div class="game-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎮</div>
+                        <div class="feature-text">触摸屏幕控制战机</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-text">自动射击消灭敌机</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎁</div>
+                        <div class="feature-text">收集道具增强能力</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💫</div>
+                        <div class="feature-text">使用技能扭转战局</div>
+                    </div>
+                </div>
+                
+                <!-- 主菜单按钮 -->
+                <div class="main-menu-buttons">
+                    <button id="startBtn" class="main-menu-btn primary">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">启动战机</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <button id="recordsBtn" class="main-menu-btn secondary">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-text">游戏记录</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                    <button id="settingsBtn" class="main-menu-btn secondary">
+                        <span class="btn-icon">⚙️</span>
+                        <span class="btn-text">设置</span>
+                        <span class="btn-glow"></span>
+                    </button>
+                </div>
+                
+                <!-- 开发者信息 -->
+                <div class="developer-info">
+                    <div class="developer-badge">
+                        <div class="developer-icon">👨‍💻</div>
+                        <div class="developer-text">
+                            <div class="developer-label">开发者</div>
+                            <div class="developer-name">LYS</div>
+                        </div>
+                    </div>
+                    <div class="copyright">© 2024 LYS Games. All rights reserved.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设置界面 -->
+        <div id="settingsScreen" class="screen hidden">
+            <h2>游戏设置</h2>
+            <div class="settings-group">
+                <label>音效音量: <span id="volumeValue">30%</span></label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="30">
+            </div>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="particleToggle" checked>
+                    粒子效果
+                </label>
+            </div>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="screenShakeToggle" checked>
+                    屏幕震动
+                </label>
+            </div>
+            <div class="settings-group">
+                <label>难度选择:</label>
+                <select id="difficultySelect">
+                    <option value="easy">简单</option>
+                    <option value="normal" selected>普通</option>
+                    <option value="hard">困难</option>
+                    <option value="nightmare">噩梦</option>
+                </select>
+            </div>
+            <button id="backBtn">返回</button>
+        </div>
+        
+        <!-- 暂停界面 -->
+        <div id="pauseScreen" class="screen hidden">
+            <h2>游戏暂停</h2>
+            <div class="pause-stats">
+                <div>当前分数: <span id="pauseScore">0</span></div>
+                <div>击杀数: <span id="pauseKills">0</span></div>
+                <div>存活时间: <span id="pauseTime">00:00</span></div>
+            </div>
+            <button id="resumeBtn">继续战斗</button>
+            <button id="restartBtn">重新开始</button>
+            <button id="mainMenuBtn">主菜单</button>
+        </div>
+        
+        <!-- 游戏结束界面 -->
+        <div id="gameOverScreen" class="screen hidden">
+            <div class="game-over-container">
+                <div class="game-over-header">
+                    <div class="game-over-icon">💥</div>
+                    <h2 class="game-over-title">战机坠毁</h2>
+                    <div class="game-over-subtitle" id="endReason">任务失败</div>
+                </div>
+                
+                <div class="game-over-content">
+                    <div class="final-score-display">
+                        <div class="score-label">最终分数</div>
+                        <div class="score-value" id="finalScoreValue">0</div>
+                    </div>
+                    
+                    <div class="game-over-stats">
+                        <div class="stat-row">
+                            <div class="stat-item">
+                                <div class="stat-icon">🏆</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">最高分数</div>
+                                    <div class="stat-value" id="highScoreValue">0</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">💀</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">总击杀</div>
+                                    <div class="stat-value" id="totalKillsValue">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-row">
+                            <div class="stat-item">
+                                <div class="stat-icon">⏱️</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">存活时间</div>
+                                    <div class="stat-value" id="survivalTimeValue">00:00</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">命中率</div>
+                                    <div class="stat-value" id="accuracyValue">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="achievements-section" id="achievements"></div>
+                    
+                    <div class="game-over-actions">
+                        <button id="playAgainBtn" class="action-btn primary">
+                            <span class="btn-icon">🚀</span>
+                            <span class="btn-text">再次出击</span>
+                        </button>
+                        <button id="shareBtn" class="action-btn secondary">
+                            <span class="btn-icon">📤</span>
+                            <span class="btn-text">分享战绩</span>
+                        </button>
+                        <button id="backToMenuBtn" class="action-btn tertiary">
+                            <span class="btn-icon">🏠</span>
+                            <span class="btn-text">返回主菜单</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 升级界面 -->
+        <div id="levelUpScreen" class="screen hidden">
+            <h2>等级提升！</h2>
+            <p>选择一个升级:</p>
+            <div class="upgrade-options">
+                <button class="upgrade-btn" data-upgrade="damage">
+                    ⚡ 攻击力 +1
+                </button>
+                <button class="upgrade-btn" data-upgrade="speed">
+                    💨 移动速度 +20%
+                </button>
+                <button class="upgrade-btn" data-upgrade="health">
+                    ❤️ 最大生命 +1
+                </button>
+            </div>
+        </div>
+        
+        <!-- Boss警告 -->
+        <div id="bossWarning" class="screen hidden">
+            <h2 style="color: #ff0000;">⚠️ 警告 ⚠️</h2>
+            <p style="font-size: 1.5em;">敌方母舰接近中...</p>
+            <div class="loading-spinner"></div>
+        </div>
+        
+        <!-- 游戏记录界面 -->
+        <div id="gameRecordsScreen" class="screen hidden">
+            <div class="records-header">
+                <h2>🎮 游戏记录</h2>
+                <button id="backFromRecordsBtn" class="back-btn">← 返回</button>
+            </div>
+            
+            <div class="records-container">
+                <!-- 左侧：统计数据 -->
+                <div class="records-left">
+                    <!-- 核心统计卡片 -->
+                    <div class="core-stats">
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">🏆</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="bestScore">0</div>
+                                <div class="stat-label">最高分数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalGamesPlayed">0</div>
+                                <div class="stat-label">总游戏数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card highlight">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalPlayTime">00:00</div>
+                                <div class="stat-label">总游戏时间</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 详细统计 -->
+                    <div class="detailed-stats">
+                        <h3>📊 详细统计</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">平均分数</span>
+                                <span class="stat-value" id="averageScore">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">总击杀数</span>
+                                <span class="stat-value" id="totalKillsStats">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">平均命中率</span>
+                                <span class="stat-value" id="averageAccuracyStats">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">最高连击</span>
+                                <span class="stat-value" id="bestComboStats">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">最长存活</span>
+                                <span class="stat-value" id="longestSurvivalStats">00:00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">每日游戏数</span>
+                                <span class="stat-value" id="gamesPerDay">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 游戏习惯分析 -->
+                    <div class="habits-analysis">
+                        <h3>🔍 游戏分析</h3>
+                        <div class="analysis-item">
+                            <div class="analysis-label">最喜欢的时间</div>
+                            <div class="analysis-value" id="favoriteTime">未知</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">进步率</div>
+                            <div class="analysis-value" id="improvementRate">0%</div>
+                        </div>
+                        <div class="analysis-item">
+                            <div class="analysis-label">最近趋势</div>
+                            <div class="analysis-value trend" id="recentTrend">📊 稳定</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 难度统计 -->
+                    <div class="difficulty-section">
+                        <h3>⚔️ 难度统计</h3>
+                        <div class="difficulty-container">
+                            <div class="difficulty-header">
+                                <span>难度</span>
+                                <span>游戏数</span>
+                                <span>平均分</span>
+                                <span>最高分</span>
+                            </div>
+                            <div id="difficultyStats" class="difficulty-stats"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="records-actions">
+                        <button id="exportRecordsBtn" class="action-btn export">📤 导出记录</button>
+                        <button id="importRecordsBtn" class="action-btn import">📥 导入记录</button>
+                        <button id="clearRecordsBtn" class="action-btn danger">🗑️ 清空记录</button>
+                    </div>
+                </div>
+                
+                <!-- 右侧：游戏记录列表 -->
+                <div class="records-right">
+                    <div class="records-list-section">
+                        <h3>📝 最近游戏记录</h3>
+                        <div class="records-filter">
+                            <select id="recordsFilter" class="filter-select">
+                                <option value="all">全部记录</option>
+                                <option value="easy">简单难度</option>
+                                <option value="normal">普通难度</option>
+                                <option value="hard">困难难度</option>
+                                <option value="nightmare">噩梦难度</option>
+                            </select>
+                            <select id="recordsSort" class="filter-select">
+                                <option value="date">按时间排序</option>
+                                <option value="score">按分数排序</option>
+                                <option value="kills">按击杀排序</option>
+                                <option value="survival">按存活时间排序</option>
+                            </select>
+                        </div>
+                        <div id="recentRecordsList" class="records-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏控制按钮 -->
+        <div id="gameControls" class="game-controls hidden">
+            <button id="pauseBtn" class="control-btn">⏸️</button>
+            <button id="endGameBtn" class="control-btn end-game-btn" title="结束本轮游戏">🏁</button>
+        </div>
+        
+        <!-- 成就通知 -->
+        <div id="achievementNotification" class="achievement-notification">
+            <div class="achievement-title">🏆 成就解锁</div>
+            <div class="achievement-desc">首次击杀</div>
+        </div>
+        
+        <!-- 警告覆盖层 -->
+        <div id="warningOverlay" class="warning-overlay hidden"></div>
+    </div>
+
+    <!-- 加载所有JavaScript文件 -->
+    <script src="utils.js"></script>
+    <script src="gameRecordManager.js"></script>
+    <script src="particle.js"></script>
+    <script src="bullet.js"></script>
+    <script src="powerup.js"></script>
+    <script src="player.js"></script>
+    <script src="enemy.js"></script>
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html> 

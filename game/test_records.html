@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏记录测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>游戏记录管理器测试</h1>
+    
+    <div class="test-section">
+        <h2>基础功能测试</h2>
+        <button onclick="testAddRecord()">添加测试记录</button>
+        <button onclick="testGetRecords()">获取所有记录</button>
+        <button onclick="testGetStatistics()">获取统计数据</button>
+        <button onclick="testClearRecords()">清空记录</button>
+        <div id="basicOutput" class="output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>导入导出测试</h2>
+        <button onclick="testExport()">导出记录</button>
+        <button onclick="testImport()">模拟导入</button>
+        <div id="importExportOutput" class="output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>搜索过滤测试</h2>
+        <button onclick="testSearch()">搜索测试</button>
+        <div id="searchOutput" class="output"></div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="gameRecordManager.js"></script>
+    <script>
+        const recordManager = new GameRecordManager();
+        
+        function log(elementId, message) {
+            document.getElementById(elementId).textContent += message + '\n';
+        }
+        
+        function clearLog(elementId) {
+            document.getElementById(elementId).textContent = '';
+        }
+        
+        function testAddRecord() {
+            clearLog('basicOutput');
+            
+            // 添加几条测试记录
+            const testData = [
+                {
+                    score: 1500,
+                    highScore: 2000,
+                    level: 3,
+                    kills: 25,
+                    survivalTime: 120000, // 2分钟
+                    totalShots: 100,
+                    totalHits: 80,
+                    maxCombo: 15,
+                    difficulty: 'normal',
+                    achievements: new Set(['firstKill', 'combo10']),
+                    endReason: 'death',
+                    playerLives: 0
+                },
+                {
+                    score: 2500,
+                    highScore: 2500,
+                    level: 5,
+                    kills: 40,
+                    survivalTime: 180000, // 3分钟
+                    totalShots: 150,
+                    totalHits: 120,
+                    maxCombo: 25,
+                    difficulty: 'hard',
+                    achievements: new Set(['firstKill', 'combo10', 'combo50']),
+                    endReason: 'death',
+                    playerLives: 0
+                },
+                {
+                    score: 800,
+                    highScore: 2500,
+                    level: 2,
+                    kills: 12,
+                    survivalTime: 60000, // 1分钟
+                    totalShots: 80,
+                    totalHits: 50,
+                    maxCombo: 8,
+                    difficulty: 'easy',
+                    achievements: new Set(['firstKill']),
+                    endReason: 'death',
+                    playerLives: 0
+                }
+            ];
+            
+            testData.forEach((data, index) => {
+                const record = recordManager.addGameRecord(data);
+                log('basicOutput', `记录 ${index + 1} 已添加: ID=${record.id}, 分数=${record.score}`);
+            });
+            
+            log('basicOutput', `\n总记录数: ${recordManager.getAllRecords().length}`);
+        }
+        
+        function testGetRecords() {
+            clearLog('basicOutput');
+            
+            const records = recordManager.getAllRecords();
+            log('basicOutput', `总记录数: ${records.length}\n`);
+            
+            records.forEach((record, index) => {
+                log('basicOutput', `记录 ${index + 1}:`);
+                log('basicOutput', `  日期: ${record.date} ${record.time}`);
+                log('basicOutput', `  分数: ${record.score}`);
+                log('basicOutput', `  击杀: ${record.kills}`);
+                log('basicOutput', `  存活时间: ${record.survivalTimeFormatted}`);
+                log('basicOutput', `  难度: ${record.difficulty}`);
+                log('basicOutput', `  命中率: ${record.accuracy}%`);
+                log('basicOutput', `  成就: ${record.achievements.join(', ')}`);
+                log('basicOutput', '');
+            });
+        }
+        
+        function testGetStatistics() {
+            clearLog('basicOutput');
+            
+            const stats = recordManager.getStatistics();
+            log('basicOutput', '=== 游戏统计 ===');
+            log('basicOutput', `总游戏数: ${stats.totalGames}`);
+            log('basicOutput', `总游戏时间: ${stats.totalPlayTimeFormatted}`);
+            log('basicOutput', `平均分数: ${stats.averageScore}`);
+            log('basicOutput', `最高分数: ${stats.bestScore}`);
+            log('basicOutput', `总击杀数: ${stats.totalKills}`);
+            log('basicOutput', `平均命中率: ${stats.averageAccuracy}%`);
+            log('basicOutput', `最高连击: ${stats.bestCombo}`);
+            log('basicOutput', `最长存活: ${stats.longestSurvivalFormatted}`);
+            log('basicOutput', `每日游戏数: ${stats.gamesPerDay}`);
+            log('basicOutput', `最喜欢的时间: ${stats.favoriteTime}`);
+            log('basicOutput', `进步率: ${stats.improvementRate}%`);
+            log('basicOutput', `最近趋势: ${stats.recentTrend}`);
+            
+            log('basicOutput', '\n=== 难度统计 ===');
+            Object.entries(stats.difficultyStats).forEach(([difficulty, diffStats]) => {
+                log('basicOutput', `${difficulty}: ${diffStats.games}局, 平均${diffStats.averageScore}分, 最高${diffStats.bestScore}分`);
+            });
+        }
+        
+        function testClearRecords() {
+            if (confirm('确定要清空所有测试记录吗？')) {
+                recordManager.clearAllRecords();
+                clearLog('basicOutput');
+                log('basicOutput', '所有记录已清空');
+            }
+        }
+        
+        function testExport() {
+            clearLog('importExportOutput');
+            
+            try {
+                const exportData = recordManager.exportRecords();
+                log('importExportOutput', '导出成功！');
+                log('importExportOutput', `导出版本: ${exportData.version}`);
+                log('importExportOutput', `导出日期: ${exportData.exportDate}`);
+                log('importExportOutput', `记录数量: ${exportData.recordCount}`);
+                log('importExportOutput', '\n导出数据预览:');
+                log('importExportOutput', JSON.stringify(exportData, null, 2).substring(0, 500) + '...');
+            } catch (error) {
+                log('importExportOutput', `导出失败: ${error.message}`);
+            }
+        }
+        
+        function testImport() {
+            clearLog('importExportOutput');
+            
+            // 模拟导入数据
+            const mockImportData = {
+                version: '1.0.0',
+                exportDate: new Date().toISOString(),
+                recordCount: 2,
+                records: [
+                    {
+                        id: Date.now() + 1000,
+                        timestamp: new Date().toISOString(),
+                        date: new Date().toLocaleDateString('zh-CN'),
+                        time: new Date().toLocaleTimeString('zh-CN'),
+                        score: 3000,
+                        highScore: 3000,
+                        level: 6,
+                        kills: 50,
+                        survivalTime: 240000,
+                        totalShots: 200,
+                        totalHits: 180,
+                        accuracy: 90,
+                        maxCombo: 30,
+                        difficulty: 'nightmare',
+                        achievements: ['firstKill', 'combo10', 'combo50', 'marksman'],
+                        achievementCount: 4,
+                        endReason: 'death',
+                        playerLives: 0,
+                        survivalTimeFormatted: '04:00',
+                        killsPerMinute: 12.5,
+                        scorePerMinute: 750,
+                        gameVersion: '1.0.0'
+                    },
+                    {
+                        id: Date.now() + 2000,
+                        timestamp: new Date().toISOString(),
+                        date: new Date().toLocaleDateString('zh-CN'),
+                        time: new Date().toLocaleTimeString('zh-CN'),
+                        score: 1200,
+                        highScore: 3000,
+                        level: 3,
+                        kills: 20,
+                        survivalTime: 90000,
+                        totalShots: 120,
+                        totalHits: 90,
+                        accuracy: 75,
+                        maxCombo: 12,
+                        difficulty: 'normal',
+                        achievements: ['firstKill', 'combo10'],
+                        achievementCount: 2,
+                        endReason: 'death',
+                        playerLives: 0,
+                        survivalTimeFormatted: '01:30',
+                        killsPerMinute: 13.3,
+                        scorePerMinute: 800,
+                        gameVersion: '1.0.0'
+                    }
+                ]
+            };
+            
+            const result = recordManager.importRecords(mockImportData);
+            log('importExportOutput', `导入结果: ${result.message}`);
+            log('importExportOutput', `成功: ${result.success}`);
+            if (result.success) {
+                log('importExportOutput', `导入记录数: ${result.imported}`);
+                log('importExportOutput', `总记录数: ${result.total}`);
+            }
+        }
+        
+        function testSearch() {
+            clearLog('searchOutput');
+            
+            // 测试各种搜索条件
+            log('searchOutput', '=== 搜索测试 ===\n');
+            
+            // 按难度搜索
+            const normalRecords = recordManager.searchRecords({ difficulty: 'normal' });
+            log('searchOutput', `普通难度记录数: ${normalRecords.length}`);
+            
+            // 按分数范围搜索
+            const highScoreRecords = recordManager.searchRecords({ minScore: 2000 });
+            log('searchOutput', `高分记录数 (>=2000): ${highScoreRecords.length}`);
+            
+            // 按成就搜索
+            const comboRecords = recordManager.searchRecords({ hasAchievement: 'combo10' });
+            log('searchOutput', `有连击成就的记录数: ${comboRecords.length}`);
+            
+            // 按分数排序
+            const sortedRecords = recordManager.searchRecords({ 
+                sortBy: 'score', 
+                sortOrder: 'desc' 
+            });
+            log('searchOutput', '\n按分数降序排列:');
+            sortedRecords.slice(0, 3).forEach((record, index) => {
+                log('searchOutput', `${index + 1}. 分数: ${record.score}, 难度: ${record.difficulty}`);
+            });
+        }
+        
+        // 页面加载时显示当前记录数
+        window.onload = function() {
+            const recordCount = recordManager.getAllRecords().length;
+            document.querySelector('h1').textContent += ` (当前记录数: ${recordCount})`;
+        };
+    </script>
+</body>
+</html> 

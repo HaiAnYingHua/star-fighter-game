@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美化游戏记录界面预览</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* 记录页面头部 */
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: rgba(0, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .records-header h2 {
+            margin: 0;
+            color: #00ffff;
+            font-size: 2.2em;
+            text-shadow: 0 0 20px #00ffff;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* 主容器 */
+        .records-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        /* 左侧统计区域 */
+        .records-left {
+            flex: 1;
+            max-width: 450px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* 右侧记录列表区域 */
+        .records-right {
+            flex: 2;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        h3 {
+            color: #00ffff;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            text-shadow: 0 0 10px #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 核心统计卡片 */
+        .core-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card.highlight {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 255, 255, 0.05) 100%);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card.highlight:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.25) 0%, rgba(0, 255, 255, 0.1) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+            font-family: 'Orbitron', monospace;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1em;
+            color: #ffffff;
+            opacity: 0.9;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 300;
+        }
+        
+        /* 详细统计 */
+        .detailed-stats {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .stat-item .stat-label {
+            color: #ffffff;
+            opacity: 0.8;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+        }
+        
+        .stat-item .stat-value {
+            color: #00ffff;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1em;
+        }
+        
+        /* 右侧记录列表样式 */
+        .records-list-section {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .records-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-select {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .records-list {
+            flex: 1;
+            overflow-y: auto;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(0, 255, 255, 0.05);
+            padding: 0;
+        }
+        
+        .game-record-item {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-record-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #00ffff, #0080ff);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .game-record-item:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .game-record-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(8px);
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .record-date {
+            color: #ffffff;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85em;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .record-date::before {
+            content: '📅';
+            font-size: 0.8em;
+        }
+        
+        .record-difficulty {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .record-difficulty.normal {
+            background: rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        
+        .record-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 8px;
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .stat .stat-label {
+            display: block;
+            font-size: 0.7em;
+            color: #ffffff;
+            opacity: 0.6;
+            margin-bottom: 4px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat .stat-value {
+            display: block;
+            font-size: 1em;
+            color: #00ffff;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+        }
+        
+        .no-records {
+            padding: 40px;
+            text-align: center;
+            color: #ffffff;
+            opacity: 0.6;
+            font-family: 'Orbitron', sans-serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="records-header">
+        <h2>🎮 游戏记录</h2>
+        <button class="back-btn">← 返回</button>
+    </div>
+    
+    <div class="records-container">
+        <!-- 左侧：统计数据 -->
+        <div class="records-left">
+            <!-- 核心统计卡片 -->
+            <div class="core-stats">
+                <div class="stat-card highlight">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-content">
+                        <div class="stat-number">15,680</div>
+                        <div class="stat-label">最高分数</div>
+                    </div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-content">
+                        <div class="stat-number">42</div>
+                        <div class="stat-label">总游戏数</div>
+                    </div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-content">
+                        <div class="stat-number">2:15:30</div>
+                        <div class="stat-label">总游戏时间</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 详细统计 -->
+            <div class="detailed-stats">
+                <h3>📊 详细统计</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">平均分数</span>
+                        <span class="stat-value">8,420</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">总击杀数</span>
+                        <span class="stat-value">1,256</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">平均命中率</span>
+                        <span class="stat-value">78%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">最高连击</span>
+                        <span class="stat-value">45</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">最长存活</span>
+                        <span class="stat-value">08:42</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">每日游戏数</span>
+                        <span class="stat-value">3.2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧：游戏记录列表 -->
+        <div class="records-right">
+            <div class="records-list-section">
+                <h3>📝 最近游戏记录</h3>
+                <div class="records-filter">
+                    <select class="filter-select">
+                        <option value="all">全部记录</option>
+                        <option value="easy">简单难度</option>
+                        <option value="normal" selected>普通难度</option>
+                        <option value="hard">困难难度</option>
+                        <option value="nightmare">噩梦难度</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="date">按时间排序</option>
+                        <option value="score" selected>按分数排序</option>
+                        <option value="kills">按击杀排序</option>
+                        <option value="survival">按存活时间排序</option>
+                    </select>
+                </div>
+                <div class="records-list">
+                    <div class="game-record-item">
+                        <div class="record-header">
+                            <span class="record-date">2024-01-15 14:30</span>
+                            <span class="record-difficulty normal">普通</span>
+                        </div>
+                        <div class="record-stats">
+                            <div class="stat">
+                                <span class="stat-label">分数</span>
+                                <span class="stat-value">15,680</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">击杀</span>
+                                <span class="stat-value">89</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">存活</span>
+                                <span class="stat-value">08:42</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">命中率</span>
+                                <span class="stat-value">85%</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">连击</span>
+                                <span class="stat-value">45</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-record-item">
+                        <div class="record-header">
+                            <span class="record-date">2024-01-15 13:15</span>
+                            <span class="record-difficulty normal">普通</span>
+                        </div>
+                        <div class="record-stats">
+                            <div class="stat">
+                                <span class="stat-label">分数</span>
+                                <span class="stat-value">12,340</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">击杀</span>
+                                <span class="stat-value">67</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">存活</span>
+                                <span class="stat-value">06:28</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">命中率</span>
+                                <span class="stat-value">72%</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">连击</span>
+                                <span class="stat-value">32</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-record-item">
+                        <div class="record-header">
+                            <span class="record-date">2024-01-14 20:45</span>
+                            <span class="record-difficulty normal">普通</span>
+                        </div>
+                        <div class="record-stats">
+                            <div class="stat">
+                                <span class="stat-label">分数</span>
+                                <span class="stat-value">9,850</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">击杀</span>
+                                <span class="stat-value">54</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">存活</span>
+                                <span class="stat-value">04:15</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">命中率</span>
+                                <span class="stat-value">68%</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">连击</span>
+                                <span class="stat-value">28</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些交互效果
+        document.querySelectorAll('.stat-card.highlight').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        document.querySelector('.back-btn').addEventListener('click', () => {
+            alert('返回主菜单');
+        });
+        
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', () => {
+                console.log('过滤/排序选项已更改:', select.value);
+            });
+        });
+    </script>
+</body>
+</html> 

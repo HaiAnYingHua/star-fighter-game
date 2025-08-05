@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主菜单测试</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- 开始界面 -->
+        <div id="startScreen" class="screen">
+            <h1>🚀 星际战机</h1>
+            <p>准备好迎接挑战了吗？</p>
+            <div class="menu-buttons">
+                <button id="startBtn" class="menu-btn">开始游戏</button>
+                <button id="recordsBtn" class="menu-btn">游戏记录</button>
+                <button id="settingsBtn" class="menu-btn">设置</button>
+            </div>
+        </div>
+
+        <!-- 游戏结束界面 -->
+        <div id="gameOverScreen" class="screen hidden">
+            <div class="game-over-container">
+                <div class="game-over-header">
+                    <div class="game-over-icon">💥</div>
+                    <h2 class="game-over-title">战机坠毁</h2>
+                    <div class="game-over-subtitle" id="endReason">任务失败</div>
+                </div>
+                
+                <div class="game-over-content">
+                    <div class="final-score-display">
+                        <div class="score-label">最终分数</div>
+                        <div class="score-value" id="finalScoreValue">15,680</div>
+                    </div>
+                    
+                    <div class="game-over-stats">
+                        <div class="stat-row">
+                            <div class="stat-item">
+                                <div class="stat-icon">🏆</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">最高分数</div>
+                                    <div class="stat-value" id="highScoreValue">23,450</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">💀</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">总击杀</div>
+                                    <div class="stat-value" id="totalKillsValue">89</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-row">
+                            <div class="stat-item">
+                                <div class="stat-icon">⏱️</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">存活时间</div>
+                                    <div class="stat-value" id="survivalTimeValue">08:42</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-content">
+                                    <div class="stat-label">命中率</div>
+                                    <div class="stat-value" id="accuracyValue">85%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="achievements-section" id="achievements">
+                        <div class="achievement">🏆 首次击杀</div>
+                        <div class="achievement">🔥 连击达人</div>
+                        <div class="achievement">⚡ 神射手</div>
+                    </div>
+                    
+                    <div class="game-over-actions">
+                        <button id="playAgainBtn" class="action-btn primary">
+                            <span class="btn-icon">🚀</span>
+                            <span class="btn-text">再次出击</span>
+                        </button>
+                        <button id="shareBtn" class="action-btn secondary">
+                            <span class="btn-icon">📤</span>
+                            <span class="btn-text">分享战绩</span>
+                        </button>
+                        <button id="backToMenuBtn" class="action-btn tertiary">
+                            <span class="btn-icon">🏠</span>
+                            <span class="btn-text">返回主菜单</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-controls" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button onclick="showMainMenu()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer;">显示主菜单</button>
+        <button onclick="showGameOver()" style="background: #f44336; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer;">显示游戏结束</button>
+    </div>
+
+    <script>
+        function hideAllScreens() {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+        }
+
+        function showMainMenu() {
+            hideAllScreens();
+            document.getElementById('startScreen').classList.remove('hidden');
+            console.log('显示主菜单');
+        }
+
+        function showGameOver() {
+            hideAllScreens();
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+            console.log('显示游戏结束界面');
+        }
+
+        // 按钮事件
+        document.getElementById('startBtn').addEventListener('click', () => {
+            alert('开始游戏');
+        });
+
+        document.getElementById('recordsBtn').addEventListener('click', () => {
+            alert('游戏记录');
+        });
+
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            alert('设置');
+        });
+
+        document.getElementById('playAgainBtn').addEventListener('click', () => {
+            alert('再次出击');
+        });
+
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            alert('分享战绩');
+        });
+
+        document.getElementById('backToMenuBtn').addEventListener('click', () => {
+            showMainMenu();
+            alert('返回主菜单');
+        });
+
+        // 页面加载时显示主菜单
+        window.addEventListener('load', () => {
+            showMainMenu();
+        });
+    </script>
+</body>
+</html> 

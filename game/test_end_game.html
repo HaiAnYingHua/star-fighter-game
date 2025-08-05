@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结束游戏按钮测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .button-demo {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background: #2a2a2a;
+        }
+        .game-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .control-btn {
+            background: rgba(0, 255, 255, 0.2);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .control-btn:hover {
+            background: rgba(0, 255, 255, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        }
+        .end-game-btn {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+        .end-game-btn:hover {
+            background: rgba(255, 107, 107, 0.4);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+        }
+        .info {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .warning {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 结束游戏按钮测试</h1>
+        
+        <div class="info">
+            <h3>功能说明</h3>
+            <p>新增的结束游戏按钮位于游戏界面右上角，暂停按钮下方。</p>
+            <ul>
+                <li>🏁 红色按钮：结束当前游戏</li>
+                <li>⏸️ 蓝色按钮：暂停游戏</li>
+            </ul>
+        </div>
+        
+        <div class="button-demo">
+            <h3>按钮样式预览</h3>
+            <div class="game-controls">
+                <button class="control-btn" onclick="testPause()">⏸️</button>
+                <button class="control-btn end-game-btn" onclick="testEndGame()">🏁</button>
+            </div>
+            <p style="text-align: center; opacity: 0.7;">点击按钮测试交互效果</p>
+        </div>
+        
+        <div class="info">
+            <h3>使用方法</h3>
+            <ol>
+                <li>开始游戏后，右上角会显示两个圆形按钮</li>
+                <li>点击红色的🏁按钮可以主动结束当前游戏</li>
+                <li>或者使用键盘快捷键 <strong>Ctrl+Q</strong> 快速结束游戏</li>
+                <li>系统会弹出确认对话框，确认后结束游戏</li>
+                <li>游戏记录会自动保存，标记为"主动退出"</li>
+                <li>显示游戏结束界面，标题变为"游戏结束"（金色）</li>
+            </ol>
+        </div>
+        
+        <div class="info success">
+            <h3>✅ 新增功能</h3>
+            <ul>
+                <li>结束游戏按钮：主动结束当前游戏</li>
+                <li>键盘快捷键：Ctrl+Q 快速结束游戏</li>
+                <li>确认对话框：防止误操作</li>
+                <li>游戏记录保存：标记结束原因为"quit"</li>
+                <li>特殊结束界面：显示"主动结束游戏"提示</li>
+                <li>响应式设计：支持手机端显示</li>
+            </ul>
+        </div>
+        
+        <div class="info warning">
+            <h3>⚠️ 注意事项</h3>
+            <ul>
+                <li>结束游戏会丢失当前进度，但会保存游戏记录</li>
+                <li>确认对话框出现时，请仔细考虑是否真的要结束</li>
+                <li>主动结束的游戏在记录中会标记为"quit"类型</li>
+                <li>按钮只在游戏进行中显示，暂停或其他状态下会隐藏</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h3>🔧 技术实现</h3>
+            <p><strong>HTML结构：</strong></p>
+            <pre style="background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto;">
+&lt;div id="gameControls" class="game-controls hidden"&gt;
+    &lt;button id="pauseBtn" class="control-btn"&gt;⏸️&lt;/button&gt;
+    &lt;button id="endGameBtn" class="control-btn end-game-btn"&gt;🏁&lt;/button&gt;
+&lt;/div&gt;</pre>
+            
+            <p><strong>主要方法：</strong></p>
+            <ul>
+                <li><code>endCurrentGame()</code> - 处理结束游戏逻辑</li>
+                <li><code>showQuickGameOver()</code> - 显示特殊的游戏结束界面</li>
+                <li><code>saveGameRecord('quit')</code> - 保存游戏记录并标记结束原因</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="opacity: 0.7;">现在你可以回到游戏中测试新功能了！</p>
+            <p style="color: #4caf50;">🎯 再也不用担心战机死不掉的问题了！</p>
+        </div>
+    </div>
+
+    <script>
+        function testPause() {
+            alert('这是暂停按钮！\n在实际游戏中会暂停游戏。');
+        }
+        
+        function testEndGame() {
+            if (confirm('确定要结束当前游戏吗？\n当前进度将会丢失，但会保存游戏记录。')) {
+                alert('游戏已结束！\n在实际游戏中会显示游戏结束界面并保存记录。');
+            }
+        }
+    </script>
+</body>
+</html> 
